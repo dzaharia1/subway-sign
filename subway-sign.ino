@@ -16,6 +16,7 @@ int port = 3333;
 
 WiFiClient wifiClient;
 HttpClient client = HttpClient(wifiClient, serverAddress, port);
+DynamicJsonDocument doc(4096);
 
 // Adafruit_Protomatter matrix(
 //   64, 4, 1, rgbPins, 4, addrPins, clockPin, latchPin, oePin, false);
@@ -31,6 +32,9 @@ void setup(void) {
     for(;;);
   }
 
+  matrix.print("Start...");
+  matrix.show();
+
   // set up wifi
   if (WiFi.status() == WL_NO_MODULE) {
    while (true);
@@ -43,8 +47,9 @@ void setup(void) {
 }
 
 void loop() {
-  Serial.println(getSchedule());
-  delay(6000);
+  Serial.println("Getting schedule...");
+  getSchedule();
+  delay(10000);
 }
 
 String getSchedule() {
@@ -52,8 +57,8 @@ String getSchedule() {
 
   int statusCode = client.responseStatusCode();
   String response = client.responseBody();
+  Serial.println(response);
 
-  DynamicJsonDocument doc(4096);
   DeserializationError error = deserializeJson(doc, response);
 
   if (error) {
@@ -65,36 +70,38 @@ String getSchedule() {
   matrix.fillScreen(matrix.color565(0, 0, 0));
   matrix.setCursor(0, 0);
 
+  // GFXcanvas16 canvases[3] = GFXcanvas16(matrix.width(), 11);
 
-  for (int i = 0; i < 1; i ++) {
+  for (int i = 0; i < 2; i ++) {
     JsonObject item = doc.as<JsonArray>()[i];
     String routeId = item["routeId"];
     String direction = item["direction"];
     int minutesUntil = item["minutesUntil"];
-    matrix.fillCircle(7, 7, 5, getLineColor(routeId));
-    matrix.setCursor(5, 4);
+    int yOrigin = 16 * i;
+
+    matrix.setTextColor(white);
+    matrix.setCursor(1, 4 + yOrigin);
+    matrix.print(i + 1);
+    matrix.fillCircle(13, 7 + yOrigin, 5, getLineColor(routeId));
+    matrix.setCursor(11, 4 + yOrigin);
     matrix.setTextColor(black);
     matrix.print(routeId);
-    matrix.setCursor(15, 4);
+    matrix.setCursor(21, 4 + yOrigin);
     matrix.setTextColor(white);
     matrix.print(direction);
-    matrix.print("  ");
+    if (minutesUntil < 10) {
+      matrix.print("  ");
+    } else {
+      matrix.print(" ");
+    }
+    if (minutesUntil == 0) {
+      matrix.setTextColor(red123);
+    }
     matrix.print(minutesUntil);
     matrix.println("min");
   }
+
   matrix.show();
-
-
-  // for (JsonObject item : doc.as<JsonArray>()) {
-  //   matrix.print("(");
-  //   matrix.print((const char*)item["routeId"]);
-  //   matrix.print(") ");
-  //   matrix.print((const char*)item["direction"]);
-  //   matrix.print(" ");
-  //   matrix.print((int)item["minutesUntil"]);
-  //   matrix.println("min");
-  //   matrix.show();
-  // }
 
   return response;
 }
