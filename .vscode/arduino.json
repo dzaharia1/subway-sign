@@ -1,7 +1,0 @@
-{
-    "sketch": "subway-sign.ino",
-    "configuration": "cache=on,speed=120,opt=small,maxqspi=50,usbstack=arduino,debug=off",
-    "board": "adafruit:samd:adafruit_matrixportal_m4",
-    "port": "/dev/cu.usbmodem1101",
-    "output": "./compiled"
-}
