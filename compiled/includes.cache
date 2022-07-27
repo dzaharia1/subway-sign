@@ -1,0 +1,197 @@
+[
+  {
+    "Sourcefile": null,
+    "Include": "",
+    "Includepath": "/Users/dan/Library/Arduino15/packages/adafruit/hardware/samd/1.7.10/cores/arduino"
+  },
+  {
+    "Sourcefile": null,
+    "Include": "",
+    "Includepath": "/Users/dan/Library/Arduino15/packages/adafruit/hardware/samd/1.7.10/variants/matrixportal_m4"
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Projects/Arduino/subway-sign/compiled/sketch/subway-sign.ino.cpp",
+    "Include": "ArduinoJson.h",
+    "Includepath": "/Users/dan/Documents/Arduino/libraries/ArduinoJson/src"
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Projects/Arduino/subway-sign/compiled/sketch/subway-sign.ino.cpp",
+    "Include": "ArduinoHttpClient.h",
+    "Includepath": "/Users/dan/Documents/Arduino/libraries/ArduinoHttpClient/src"
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Projects/Arduino/subway-sign/compiled/sketch/subway-sign.ino.cpp",
+    "Include": "SPI.h",
+    "Includepath": "/Users/dan/Library/Arduino15/packages/adafruit/hardware/samd/1.7.10/libraries/SPI"
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Projects/Arduino/subway-sign/compiled/sketch/subway-sign.ino.cpp",
+    "Include": "Adafruit_ZeroDMA.h",
+    "Includepath": "/Users/dan/Library/Arduino15/packages/adafruit/hardware/samd/1.7.10/libraries/Adafruit_ZeroDMA"
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Projects/Arduino/subway-sign/compiled/sketch/subway-sign.ino.cpp",
+    "Include": "WiFiNINA.h",
+    "Includepath": "/Users/dan/Documents/Arduino/libraries/WiFiNINA/src"
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Projects/Arduino/subway-sign/compiled/sketch/subway-sign.ino.cpp",
+    "Include": "Adafruit_Protomatter.h",
+    "Includepath": "/Users/dan/Documents/Arduino/libraries/Adafruit_Protomatter/src"
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Projects/Arduino/subway-sign/compiled/sketch/subway-sign.ino.cpp",
+    "Include": "Adafruit_GFX.h",
+    "Includepath": "/Users/dan/Documents/Arduino/libraries/Adafruit_GFX_Library"
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Projects/Arduino/subway-sign/compiled/sketch/subway-sign.ino.cpp",
+    "Include": "Adafruit_I2CDevice.h",
+    "Includepath": "/Users/dan/Documents/Arduino/libraries/Adafruit_BusIO"
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Projects/Arduino/subway-sign/compiled/sketch/subway-sign.ino.cpp",
+    "Include": "Wire.h",
+    "Includepath": "/Users/dan/Library/Arduino15/packages/adafruit/hardware/samd/1.7.10/libraries/Wire"
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Projects/Arduino/subway-sign/compiled/sketch/subway-sign.ino.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/ArduinoHttpClient/src/HttpClient.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/ArduinoHttpClient/src/URLEncoder.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/ArduinoHttpClient/src/WebSocketClient.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/ArduinoHttpClient/src/b64.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Library/Arduino15/packages/adafruit/hardware/samd/1.7.10/libraries/SPI/SPI.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Library/Arduino15/packages/adafruit/hardware/samd/1.7.10/libraries/Adafruit_ZeroDMA/Adafruit_ZeroDMA.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/WiFiNINA/src/WiFi.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/WiFiNINA/src/WiFiClient.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/WiFiNINA/src/WiFiSSLClient.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/WiFiNINA/src/WiFiServer.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/WiFiNINA/src/WiFiStorage.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/WiFiNINA/src/WiFiUdp.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/WiFiNINA/src/utility/WiFiSocketBuffer.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/WiFiNINA/src/utility/nano_rp2040_support.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/WiFiNINA/src/utility/server_drv.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/WiFiNINA/src/utility/spi_drv.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/WiFiNINA/src/utility/wifi_drv.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/Adafruit_Protomatter/src/Adafruit_Protomatter.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/Adafruit_Protomatter/src/core.c",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/Adafruit_GFX_Library/Adafruit_GFX.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/Adafruit_GFX_Library/Adafruit_GrayOLED.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/Adafruit_GFX_Library/Adafruit_SPITFT.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/Adafruit_GFX_Library/glcdfont.c",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/Adafruit_BusIO/Adafruit_BusIO_Register.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/Adafruit_BusIO/Adafruit_I2CDevice.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Documents/Arduino/libraries/Adafruit_BusIO/Adafruit_SPIDevice.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/Users/dan/Library/Arduino15/packages/adafruit/hardware/samd/1.7.10/libraries/Wire/Wire.cpp",
+    "Include": "",
+    "Includepath": null
+  }
+]
