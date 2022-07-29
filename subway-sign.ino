@@ -49,7 +49,7 @@ void setup(void) {
 void loop() {
   Serial.println("Getting schedule...");
   getSchedule();
-  delay(10000);
+  delay(15000);
 }
 
 String getSchedule() {
