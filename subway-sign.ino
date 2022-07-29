@@ -16,10 +16,11 @@ int port = 3333;
 
 WiFiClient wifiClient;
 HttpClient client = HttpClient(wifiClient, serverAddress, port);
+
+// the document will contain the schedule. is updated by the getSchedule function
 DynamicJsonDocument doc(4096);
 
-// Adafruit_Protomatter matrix(
-//   64, 4, 1, rgbPins, 4, addrPins, clockPin, latchPin, oePin, false);
+// JsonObject schedule[5];
 
 void setup(void) {
   Serial.begin(9600);
@@ -49,12 +50,14 @@ void setup(void) {
 void loop() {
   Serial.println("Getting schedule...");
   getSchedule();
-  delay(15000);
+  for (int i = 1; i < 6; i ++) {
+    drawArrivals(0, i);
+    delay(5000);
+  }
 }
 
-String getSchedule() {
+void getSchedule() {
   client.get("/");
-
   int statusCode = client.responseStatusCode();
   String response = client.responseBody();
   Serial.println(response);
@@ -64,16 +67,20 @@ String getSchedule() {
   if (error) {
     Serial.print("deserializeJson() failed: ");
     Serial.println(error.c_str());
-    return "";
+    return;
+  } else {
+    Serial.println("worked?");
   }
+}
 
+// draw arrivals on the matrix
+void drawArrivals(int firstIndex, int secondIndex) {
+  JsonObject arrivalsToDraw[] = { doc.as<JsonArray>()[firstIndex], doc.as<JsonArray>()[secondIndex] };
   matrix.fillScreen(matrix.color565(0, 0, 0));
   matrix.setCursor(0, 0);
 
-  // GFXcanvas16 canvases[3] = GFXcanvas16(matrix.width(), 11);
-
   for (int i = 0; i < 2; i ++) {
-    JsonObject item = doc.as<JsonArray>()[i];
+    JsonObject item = arrivalsToDraw[i];
     String routeId = item["routeId"];
     String direction = item["direction"];
     int minutesUntil = item["minutesUntil"];
@@ -81,7 +88,11 @@ String getSchedule() {
 
     matrix.setTextColor(white);
     matrix.setCursor(1, 4 + yOrigin);
-    matrix.print(i + 1);
+    if (i == 0) {
+      matrix.print(i + 1);
+    } else {
+      matrix.print(secondIndex + 1);
+    }
     matrix.fillCircle(13, 7 + yOrigin, 5, getLineColor(routeId));
     matrix.setCursor(11, 4 + yOrigin);
     matrix.setTextColor(black);
@@ -102,7 +113,5 @@ String getSchedule() {
   }
 
   matrix.show();
-
-  return response;
 }
 
