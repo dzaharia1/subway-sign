@@ -3,47 +3,17 @@
 #include <SPI.h>
 #include <WiFiNINA.h>
 #include <Adafruit_Protomatter.h>
-#include "configuration.h"
+// #include "configuration.h"
 #include "matrix.h"
-
-char ssid[] = SSID;
-char wifiPass[] = WIFI_PASS;
-int keyIndex = 0;
-
-int wifiStatus = WL_IDLE_STATUS;
-char serverAddress[] = "192.168.1.81";
-int port = 3333;
-
-WiFiClient wifiClient;
-HttpClient client = HttpClient(wifiClient, serverAddress, port);
+#include "wifi.h"
 
 // the document will contain the schedule. is updated by the getSchedule function
 DynamicJsonDocument doc(4096);
 
-// JsonObject schedule[5];
-
 void setup(void) {
   Serial.begin(9600);
-
-  Serial.print("Protomatter begin() status: ");
-  Serial.println((int)LEDStatus);
-  if(LEDStatus != PROTOMATTER_OK) {
-    for(;;);
-  }
-  matrix.setRotation(2);
-
-  matrix.print("Start...");
-  matrix.show();
-
-  // set up wifi
-  if (WiFi.status() == WL_NO_MODULE) {
-   while (true);
-  }
-
-  while (wifiStatus != WL_CONNECTED) {
-    wifiStatus = WiFi.begin(ssid, wifiPass);
-    delay(1000);
-  }
+  setupMatrix();
+  setupWiFi();
 }
 
 void loop() {

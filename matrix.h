@@ -64,3 +64,15 @@ uint16_t getLineColor(String routeId) {
 
     return matrix.color565(255, 255, 255);
 }
+
+void setupMatrix() {
+  Serial.print("Protomatter begin() status: ");
+  Serial.println((int)LEDStatus);
+  if(LEDStatus != PROTOMATTER_OK) {
+    for(;;);
+  }
+  matrix.setRotation(2);
+
+  matrix.print("Start...");
+  matrix.show();
+}
