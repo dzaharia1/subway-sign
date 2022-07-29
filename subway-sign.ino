@@ -4,7 +4,7 @@
 #include <WiFiNINA.h>
 #include <Adafruit_Protomatter.h>
 #include "configuration.h"
-#include "colors.h"
+#include "matrix.h"
 
 char ssid[] = SSID;
 char wifiPass[] = WIFI_PASS;
@@ -25,13 +25,12 @@ DynamicJsonDocument doc(4096);
 void setup(void) {
   Serial.begin(9600);
 
-  // Initialize matrix...
-  ProtomatterStatus LEDStatus = matrix.begin();
   Serial.print("Protomatter begin() status: ");
   Serial.println((int)LEDStatus);
   if(LEDStatus != PROTOMATTER_OK) {
     for(;;);
   }
+  matrix.setRotation(2);
 
   matrix.print("Start...");
   matrix.show();
@@ -106,7 +105,7 @@ void drawArrivals(int firstIndex, int secondIndex) {
       matrix.print(" ");
     }
     if (minutesUntil == 0) {
-      matrix.setTextColor(red123);
+      matrix.setTextColor(orangeBDFM);
     }
     matrix.print(minutesUntil);
     matrix.println("min");

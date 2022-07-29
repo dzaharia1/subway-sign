@@ -6,8 +6,10 @@ uint8_t clockPin   = 14;
 uint8_t latchPin   = 15;
 uint8_t oePin      = 16;
 
-Adafruit_Protomatter matrix(
-  64, 4, 1, rgbPins, 4, addrPins, clockPin, latchPin, oePin, false);
+Adafruit_Protomatter matrix( 64, 4, 1, rgbPins, 4, addrPins, clockPin, latchPin, oePin, false);
+
+// Initialize matrix...
+ProtomatterStatus LEDStatus = matrix.begin();
 
 uint16_t red123 = matrix.color565(238, 10, 10);
 uint16_t green456 = matrix.color565(0, 147, 60);
