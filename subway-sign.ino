@@ -53,20 +53,20 @@ void drawArrivals(int firstIndex, int secondIndex) {
     String routeId = item["routeId"];
     String direction = item["direction"];
     int minutesUntil = item["minutesUntil"];
-    int yOrigin = 16 * i;
+    int yOrigin = 15 * i;
 
     matrix.setTextColor(white);
-    matrix.setCursor(1, 4 + yOrigin);
+    matrix.setCursor(1, 5 + yOrigin);
     if (i == 0) {
       matrix.print(firstIndex + 1);
     } else {
       matrix.print(secondIndex + 1);
     }
-    matrix.fillCircle(13, 7 + yOrigin, 5, getLineColor(routeId));
-    matrix.setCursor(11, 4 + yOrigin);
+    matrix.fillCircle(13, 8 + yOrigin, 5, getLineColor(routeId));
+    matrix.setCursor(11, 5 + yOrigin);
     matrix.setTextColor(black);
     matrix.print(routeId);
-    matrix.setCursor(21, 4 + yOrigin);
+    matrix.setCursor(21, 5 + yOrigin);
     matrix.setTextColor(white);
     matrix.print(direction);
     if (minutesUntil < 10) {
