@@ -19,8 +19,8 @@ void setup(void) {
 void loop() {
   Serial.println("Getting schedule...");
   getSchedule();
-  for (int i = 0; i < 8; i = i + 2) {
-    drawArrivals(i, i + 1);
+  for (int i = 1; i < 6; i ++) {
+    drawArrivals(0, i);
     delay(6000);
   }
 }
