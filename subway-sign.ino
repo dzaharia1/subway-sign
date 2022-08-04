@@ -51,36 +51,44 @@ void drawArrivals(int firstIndex, int secondIndex) {
   for (int i = 0; i < 2; i ++) {
     JsonObject item = arrivalsToDraw[i];
     String routeId = item["routeId"];
-    String direction = item["direction"];
+    String direction = item["headsign"];
+    if (direction == "Northbound") {
+      direction = "North";
+    } else if (direction == "Southbound") {
+      direction  = "South";
+    } else {
+      direction = direction.substring(0, 4);
+    }
     int minutesUntil = item["minutesUntil"];
     int yOrigin = 15 * i;
 
     matrix.setTextColor(white);
-    matrix.setCursor(1, 5 + yOrigin);
+    matrix.setTextSize(0);
+    matrix.setTextWrap(false);
+    matrix.setCursor(0, 5 + yOrigin);
     if (i == 0) {
       matrix.print(firstIndex + 1);
     } else {
       matrix.print(secondIndex + 1);
     }
-    matrix.fillCircle(13, 8 + yOrigin, 5, getLineColor(routeId));
-    matrix.setCursor(11, 5 + yOrigin);
+    matrix.fillCircle(11, 8 + yOrigin, 5, getLineColor(routeId));
+    matrix.setCursor(9, 5 + yOrigin);
     matrix.setTextColor(black);
     matrix.print(routeId);
-    matrix.setCursor(21, 5 + yOrigin);
+    matrix.setCursor(18, 5 + yOrigin);
     matrix.setTextColor(white);
     matrix.print(direction);
     if (minutesUntil < 10) {
-      matrix.print("  ");
+      matrix.setCursor(53, 5 + yOrigin);
     } else {
-      matrix.print(" ");
+      matrix.setCursor(47, 5 + yOrigin);
     }
     if (minutesUntil == 0) {
       matrix.setTextColor(orangeBDFM);
     }
     matrix.print(minutesUntil);
-    matrix.println("min");
+    matrix.println("m");
   }
 
   matrix.show();
 }
-
