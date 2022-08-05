@@ -8,12 +8,17 @@
 #include "wifi.h"
 
 // the document will contain the schedule. is updated by the getSchedule function
-DynamicJsonDocument doc(4096);
+StaticJsonDocument<1024> doc;
+#define upButton 2
+#define downButton 3
 
 void setup(void) {
   Serial.begin(9600);
+  pinMode(upButton, INPUT_PULLUP);
+  pinMode(downButton, INPUT_PULLUP);
   setupMatrix();
   setupWiFi();
+  attachInterrupt(digitalPinToInterrupt(upButton), upButtonListener, FALLING);
 }
 
 void loop() {
@@ -25,6 +30,17 @@ void loop() {
   }
 }
 
+void upButtonListener () {
+  Serial.println("teehee!");
+  if (matrix.getRotation() == 0) {
+    matrix.setRotation(2);
+  } else {
+    matrix.setRotation(0);
+  }
+  drawArrivals(0, 1);
+  matrix.show();
+}
+
 void getSchedule() {
   client.get("/");
   int statusCode = client.responseStatusCode();
@@ -34,11 +50,9 @@ void getSchedule() {
   DeserializationError error = deserializeJson(doc, response);
 
   if (error) {
-    Serial.print("deserializeJson() failed: ");
-    Serial.println(error.c_str());
+    matrix.print("deserializeJson() failed: ");
+    matrix.println(error.c_str());
     return;
-  } else {
-    Serial.println("worked?");
   }
 }
 
@@ -51,14 +65,14 @@ void drawArrivals(int firstIndex, int secondIndex) {
   for (int i = 0; i < 2; i ++) {
     JsonObject item = arrivalsToDraw[i];
     String routeId = item["routeId"];
-    String direction = item["headsign"];
-    if (direction == "Northbound") {
-      direction = "North";
-    } else if (direction == "Southbound") {
-      direction  = "South";
-    } else {
-      direction = direction.substring(0, 4);
-    }
+    String direction = item["direction"];
+    // if (direction == "Northbound") {
+    //   direction = "North";
+    // } else if (direction == "Southbound") {
+    //   direction  = "South";
+    // } else {
+    //   direction = direction.substring(0, 4);
+    // }
     int minutesUntil = item["minutesUntil"];
     int yOrigin = 15 * i;
 
