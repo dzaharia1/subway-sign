@@ -12,6 +12,8 @@ StaticJsonDocument<1024> doc;
 #define upButton 2
 #define downButton 3
 
+boolean rotating = false;
+
 void setup(void) {
   Serial.begin(9600);
   pinMode(upButton, INPUT_PULLUP);
@@ -19,26 +21,22 @@ void setup(void) {
   setupMatrix();
   setupWiFi();
   attachInterrupt(digitalPinToInterrupt(upButton), upButtonListener, FALLING);
+  attachInterrupt(digitalPinToInterrupt(downButton), downButtonListener, FALLING);
 }
 
 void loop() {
   Serial.println("Getting schedule...");
   getSchedule();
-  for (int i = 1; i < 6; i ++) {
-    drawArrivals(0, i);
-    delay(6000);
-  }
-}
 
-void upButtonListener () {
-  Serial.println("teehee!");
-  if (matrix.getRotation() == 0) {
-    matrix.setRotation(2);
+  if (rotating) {
+    for (int i = 1; i < 6; i ++) {
+      drawArrivals(0, i);
+      delay(5000);
+    }
   } else {
-    matrix.setRotation(0);
+    drawArrivals(0, 1);
+    delay(15000);
   }
-  drawArrivals(0, 1);
-  matrix.show();
 }
 
 void getSchedule() {
@@ -64,45 +62,70 @@ void drawArrivals(int firstIndex, int secondIndex) {
 
   for (int i = 0; i < 2; i ++) {
     JsonObject item = arrivalsToDraw[i];
+    int yOrigin = 15 * i;
+    int xOrigin;
     String routeId = item["routeId"];
     String direction = item["direction"];
-    // if (direction == "Northbound") {
-    //   direction = "North";
-    // } else if (direction == "Southbound") {
-    //   direction  = "South";
-    // } else {
-    //   direction = direction.substring(0, 4);
-    // }
     int minutesUntil = item["minutesUntil"];
-    int yOrigin = 15 * i;
 
     matrix.setTextColor(white);
     matrix.setTextSize(0);
     matrix.setTextWrap(false);
-    matrix.setCursor(0, 5 + yOrigin);
-    if (i == 0) {
-      matrix.print(firstIndex + 1);
+
+    if (rotating) {
+      xOrigin = 6;
+      matrix.setCursor(0, 5 + yOrigin);
+      if (i == 0) {
+        matrix.print(firstIndex + 1);
+      } else {
+        matrix.print(secondIndex + 1);
+      }
     } else {
-      matrix.print(secondIndex + 1);
+      xOrigin = 0;
     }
-    matrix.fillCircle(11, 8 + yOrigin, 5, getLineColor(routeId));
-    matrix.setCursor(9, 5 + yOrigin);
+    if (direction == "Uptown") {
+      direction = "Uptwn";
+    } else {
+      direction = "Dntwn";
+    }
+    
+    matrix.fillCircle(xOrigin + 5, 8 + yOrigin, 5, getLineColor(routeId));
+    matrix.setCursor(xOrigin + 3, 5 + yOrigin);
     matrix.setTextColor(black);
     matrix.print(routeId);
-    matrix.setCursor(18, 5 + yOrigin);
+    matrix.setCursor(xOrigin + 12, 5 + yOrigin);
     matrix.setTextColor(white);
     matrix.print(direction);
+
     if (minutesUntil < 10) {
-      matrix.setCursor(53, 5 + yOrigin);
+      matrix.setCursor(matrix.width() - 11, 5 + yOrigin);
     } else {
-      matrix.setCursor(47, 5 + yOrigin);
+      matrix.setCursor(matrix.width() - 17, 5 + yOrigin);
     }
-    if (minutesUntil == 0) {
+
+    if (minutesUntil < 6) {
       matrix.setTextColor(orangeBDFM);
     }
+    
     matrix.print(minutesUntil);
     matrix.println("m");
   }
 
   matrix.show();
+}
+
+void upButtonListener () {
+  Serial.println("teehee!");
+  if (matrix.getRotation() == 0) {
+    matrix.setRotation(2);
+  } else {
+    matrix.setRotation(0);
+  }
+  drawArrivals(0, 1);
+  matrix.show();
+}
+
+void downButtonListener () {
+  rotating = !rotating;
+  drawArrivals(0, 1);
 }
