@@ -19,6 +19,7 @@ void setup(void) {
   pinMode(upButton, INPUT_PULLUP);
   pinMode(downButton, INPUT_PULLUP);
   setupMatrix();
+  matrix.setRotation(2);
   setupWiFi();
   attachInterrupt(digitalPinToInterrupt(upButton), upButtonListener, FALLING);
   attachInterrupt(digitalPinToInterrupt(downButton), downButtonListener, FALLING);
@@ -89,10 +90,23 @@ void drawArrivals(int firstIndex, int secondIndex) {
       direction = "Dntwn";
     }
     
-    matrix.fillCircle(xOrigin + 5, 8 + yOrigin, 5, getLineColor(routeId));
+    if (routeId[1] == 'X') {
+      matrix.fillTriangle(
+        xOrigin + 5, yOrigin + 2,
+        xOrigin - 1, yOrigin + 8,
+        xOrigin + 11, yOrigin + 8,
+        getLineColor(routeId.substring(0, 1)));
+      matrix.fillTriangle(
+        xOrigin - 1, yOrigin + 8,
+        xOrigin + 11, yOrigin + 8,
+        xOrigin + 5, yOrigin + 14,
+        getLineColor(routeId.substring(0, 1)));
+    } else {
+      matrix.fillCircle(xOrigin + 5, 8 + yOrigin, 5, getLineColor(routeId));
+    }
     matrix.setCursor(xOrigin + 3, 5 + yOrigin);
     matrix.setTextColor(black);
-    matrix.print(routeId);
+    matrix.print(routeId[0]);
     matrix.setCursor(xOrigin + 12, 5 + yOrigin);
     matrix.setTextColor(white);
     matrix.print(direction);
@@ -101,10 +115,6 @@ void drawArrivals(int firstIndex, int secondIndex) {
       matrix.setCursor(matrix.width() - 11, 5 + yOrigin);
     } else {
       matrix.setCursor(matrix.width() - 17, 5 + yOrigin);
-    }
-
-    if (minutesUntil < 6) {
-      matrix.setTextColor(orangeBDFM);
     }
     
     matrix.print(minutesUntil);
@@ -115,7 +125,6 @@ void drawArrivals(int firstIndex, int secondIndex) {
 }
 
 void upButtonListener () {
-  Serial.println("teehee!");
   if (matrix.getRotation() == 0) {
     matrix.setRotation(2);
   } else {
