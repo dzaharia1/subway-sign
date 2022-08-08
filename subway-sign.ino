@@ -6,9 +6,10 @@
 #include "configuration.h"
 #include "matrix.h"
 #include "wifi.h"
+#include "adaio.h"
 
 // the document will contain the schedule. is updated by the getSchedule function
-StaticJsonDocument<1024> doc;
+StaticJsonDocument<2048> doc;
 #define upButton 2
 #define downButton 3
 
@@ -16,20 +17,23 @@ boolean rotating = true;
 
 void setup(void) {
   Serial.begin(9600);
+  setupWiFi();
   pinMode(upButton, INPUT_PULLUP);
   pinMode(downButton, INPUT_PULLUP);
   setupMatrix();
-  setupWiFi();
   attachInterrupt(digitalPinToInterrupt(upButton), upButtonListener, FALLING);
   attachInterrupt(digitalPinToInterrupt(downButton), downButtonListener, FALLING);
+  writeLog("Starting up");
 }
 
 void loop() {
-  Serial.println("Getting schedule...");
   getSchedule();
 
   if (rotating) {
     for (int i = 1; i < 6; i ++) {
+      if (!rotating) {
+        break;
+      }
       drawArrivals(0, i);
       delay(5000);
     }
@@ -40,16 +44,18 @@ void loop() {
 }
 
 void getSchedule() {
+  writeLog("Getting schedule...");
   String url = "/sign/";
   url += SIGN_ID;
   client.get(url);
   int statusCode = client.responseStatusCode();
   String response = client.responseBody();
-  Serial.println(response);
+  Serial.println(statusCode);
+  // writeLog(response);
 
   DeserializationError error = deserializeJson(doc, response);
 
-  if (error) {
+  if (error.c_str() != "Ok") {
     matrix.print("deserializeJson() failed: ");
     matrix.println(error.c_str());
     delay(5000);
