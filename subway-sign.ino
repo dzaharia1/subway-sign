@@ -3,7 +3,7 @@
 #include <SPI.h>
 #include <WiFiNINA.h>
 #include <Adafruit_Protomatter.h>
-// #include "configuration.h"
+#include "configuration.h"
 #include "matrix.h"
 #include "wifi.h"
 
@@ -41,7 +41,9 @@ void loop() {
 }
 
 void getSchedule() {
-  client.get("/");
+  String url = "/sign/";
+  url += SIGN_ID;
+  client.get(url);
   int statusCode = client.responseStatusCode();
   String response = client.responseBody();
   Serial.println(response);
