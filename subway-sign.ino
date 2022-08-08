@@ -6,7 +6,6 @@
 #include "configuration.h"
 #include "matrix.h"
 #include "wifi.h"
-#include "adaio.h"
 
 // the document will contain the schedule. is updated by the getSchedule function
 StaticJsonDocument<2048> doc;
