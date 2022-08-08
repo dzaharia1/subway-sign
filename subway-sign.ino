@@ -52,7 +52,8 @@ void getSchedule() {
   if (error) {
     matrix.print("deserializeJson() failed: ");
     matrix.println(error.c_str());
-    return;
+    delay(5000);
+    getSchedule();
   }
 }
 
