@@ -12,14 +12,13 @@ StaticJsonDocument<1024> doc;
 #define upButton 2
 #define downButton 3
 
-boolean rotating = false;
+boolean rotating = true;
 
 void setup(void) {
   Serial.begin(9600);
   pinMode(upButton, INPUT_PULLUP);
   pinMode(downButton, INPUT_PULLUP);
   setupMatrix();
-  matrix.setRotation(2);
   setupWiFi();
   attachInterrupt(digitalPinToInterrupt(upButton), upButtonListener, FALLING);
   attachInterrupt(digitalPinToInterrupt(downButton), downButtonListener, FALLING);
@@ -68,8 +67,9 @@ void drawArrivals(int firstIndex, int secondIndex) {
     int yOrigin = 15 * i;
     int xOrigin;
     String routeId = item["routeId"];
-    String direction = item["direction"];
+    String direction = item["headsign"];
     int minutesUntil = item["minutesUntil"];
+
 
     matrix.setTextColor(white);
     matrix.setTextSize(0);
@@ -77,6 +77,7 @@ void drawArrivals(int firstIndex, int secondIndex) {
 
     if (rotating) {
       xOrigin = 6;
+      direction = direction.substring(0, 12);
       matrix.setCursor(0, 5 + yOrigin);
       if (i == 0) {
         matrix.print(firstIndex + 1);
@@ -84,12 +85,8 @@ void drawArrivals(int firstIndex, int secondIndex) {
         matrix.print(secondIndex + 1);
       }
     } else {
+      direction = direction.substring(0, 14);
       xOrigin = 0;
-    }
-    if (direction == "Uptown") {
-      direction = "Uptwn";
-    } else {
-      direction = "Dntwn";
     }
     
     if (routeId[1] == 'X') {
@@ -109,18 +106,19 @@ void drawArrivals(int firstIndex, int secondIndex) {
     matrix.setCursor(xOrigin + 3, 5 + yOrigin);
     matrix.setTextColor(black);
     matrix.print(routeId[0]);
-    matrix.setCursor(xOrigin + 12, 5 + yOrigin);
+    matrix.setCursor(xOrigin + 13, 5 + yOrigin);
     matrix.setTextColor(white);
     matrix.print(direction);
 
     if (minutesUntil < 10) {
-      matrix.setCursor(matrix.width() - 11, 5 + yOrigin);
+      matrix.setCursor(matrix.width() - 24, 5 + yOrigin);
     } else {
-      matrix.setCursor(matrix.width() - 17, 5 + yOrigin);
+      matrix.setCursor(matrix.width() - 30, 5 + yOrigin);
     }
-    
+
+    matrix.setTextColor(white, black);
     matrix.print(minutesUntil);
-    matrix.println("m");
+    matrix.println("min");
   }
 
   matrix.show();
