@@ -144,16 +144,17 @@ void drawArrivals(int firstIndex, int secondIndex) {
 
     matrix.setTextColor(white, black);
     matrix.print(minutesUntil);
-    matrix.println("min");
+    matrix.print("min");
   }
 
   matrix.show();
 }
 
-void upButtonListener () {
+void downButtonListener () {
   if (on) {
     on = false;
-    matrix.setCursor(7, 7);
+    matrix.setCursor(0, 0);
+    matrix.setTextColor(white);
     matrix.print("Sleep");
     matrix.show();
     delay(5000);
@@ -165,7 +166,7 @@ void upButtonListener () {
   }
 }
 
-void downButtonListener () {
+void upButtonListener () {
   rotating = !rotating;
   populate();
 }
