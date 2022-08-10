@@ -8,11 +8,13 @@
 #include "wifi.h"
 
 // the document will contain the schedule. is updated by the getSchedule function
-StaticJsonDocument<1024> doc;
 #define upButton 2
 #define downButton 3
+StaticJsonDocument<2048> doc;
+String apiResponse;
 
 boolean rotating = true;
+boolean on = true;
 
 void setup(void) {
   Serial.begin(9600);
@@ -28,15 +30,26 @@ void loop() {
   Serial.println("Getting schedule...");
   getSchedule();
 
-  if (rotating) {
-    for (int i = 1; i < 6; i ++) {
-      drawArrivals(0, i);
-      delay(5000);
-    }
+  if (on) {
+    populate();
   } else {
-    drawArrivals(0, 1);
-    delay(15000);
+    delay(5000);
   }
+}
+
+void populate() {
+    if (rotating && on) {
+      for (int i = 1; i < 6; i ++) {
+        // check again in case mode was changed during execution
+        if (rotating && on) {
+          drawArrivals(0, i);
+          delay(5000);
+        }
+      }
+    } else {
+      drawArrivals(0, 1);
+      delay(10000);
+    }
 }
 
 void getSchedule() {
@@ -44,14 +57,22 @@ void getSchedule() {
   url += SIGN_ID;
   client.get(url);
   int statusCode = client.responseStatusCode();
-  String response = client.responseBody();
-  Serial.println(response);
+  apiResponse = client.responseBody();
+  Serial.println(apiResponse);
 
-  DeserializationError error = deserializeJson(doc, response);
+  doc.clear();
+  DeserializationError error = deserializeJson(doc, apiResponse);
 
-  if (error) {
+  if (statusCode != 200) {
+    matrix.println("Server");
+    matrix.print("unreachable");
+    matrix.show();
+    delay(5000);
+    getSchedule();
+  } else if (error) {
     matrix.print("deserializeJson() failed: ");
     matrix.println(error.c_str());
+    matrix.show();
     delay(5000);
     getSchedule();
   }
@@ -68,7 +89,7 @@ void drawArrivals(int firstIndex, int secondIndex) {
     int yOrigin = 15 * i;
     int xOrigin;
     String routeId = item["routeId"];
-    String direction = item["headsign"];
+    String headsign = item["headsign"];
     int minutesUntil = item["minutesUntil"];
 
 
@@ -78,7 +99,7 @@ void drawArrivals(int firstIndex, int secondIndex) {
 
     if (rotating) {
       xOrigin = 6;
-      direction = direction.substring(0, 12);
+      headsign = headsign.substring(0, 13);
       matrix.setCursor(0, 5 + yOrigin);
       if (i == 0) {
         matrix.print(firstIndex + 1);
@@ -86,7 +107,7 @@ void drawArrivals(int firstIndex, int secondIndex) {
         matrix.print(secondIndex + 1);
       }
     } else {
-      direction = direction.substring(0, 14);
+      headsign = headsign.substring(0, 14);
       xOrigin = 0;
     }
     
@@ -106,36 +127,46 @@ void drawArrivals(int firstIndex, int secondIndex) {
     }
     matrix.setCursor(xOrigin + 3, 5 + yOrigin);
     matrix.setTextColor(black);
-    matrix.print(routeId[0]);
+    if (routeId == "GS") {
+      matrix.print(routeId[1]);
+    } else {
+      matrix.print(routeId[0]);
+    }
     matrix.setCursor(xOrigin + 13, 5 + yOrigin);
     matrix.setTextColor(white);
-    matrix.print(direction);
+    matrix.print(headsign);
 
     if (minutesUntil < 10) {
-      matrix.setCursor(matrix.width() - 24, 5 + yOrigin);
+      matrix.setCursor(matrix.width() - 23, 5 + yOrigin);
     } else {
-      matrix.setCursor(matrix.width() - 30, 5 + yOrigin);
+      matrix.setCursor(matrix.width() - 29, 5 + yOrigin);
     }
 
     matrix.setTextColor(white, black);
     matrix.print(minutesUntil);
-    matrix.println("min");
+    matrix.print("min");
   }
 
-  matrix.show();
-}
-
-void upButtonListener () {
-  if (matrix.getRotation() == 0) {
-    matrix.setRotation(2);
-  } else {
-    matrix.setRotation(0);
-  }
-  drawArrivals(0, 1);
   matrix.show();
 }
 
 void downButtonListener () {
+  if (on) {
+    on = false;
+    matrix.setCursor(0, 0);
+    matrix.setTextColor(white);
+    matrix.print("Sleep");
+    matrix.show();
+    delay(5000);
+    matrix.fillScreen(black);
+    matrix.show();
+  } else {
+    on = true;
+    populate();
+  }
+}
+
+void upButtonListener () {
   rotating = !rotating;
-  drawArrivals(0, 1);
+  populate();
 }
