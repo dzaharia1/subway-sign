@@ -27,13 +27,12 @@ void setup(void) {
 }
 
 void loop() {
-  Serial.println("Getting schedule...");
-  getSchedule();
-
   if (on) {
+    Serial.println("Getting schedule...");
+    getSchedule();
     populate();
   } else {
-    delay(5000);
+    delay(15000);
   }
 }
 
@@ -64,15 +63,15 @@ void getSchedule() {
   DeserializationError error = deserializeJson(doc, apiResponse);
 
   if (statusCode != 200) {
-    matrix.println("Server");
-    matrix.print("unreachable");
-    matrix.show();
+    printMessage("Server unreachable");
+    delay(1500);
+    printMessage("Trying again");
     delay(5000);
     getSchedule();
   } else if (error) {
-    matrix.print("deserializeJson() failed: ");
-    matrix.println(error.c_str());
-    matrix.show();
+    printMessage("Parsing failed");
+    delay(1000);
+    printMessage(error.c_str());
     delay(5000);
     getSchedule();
   }
@@ -132,7 +131,7 @@ void drawArrivals(int firstIndex, int secondIndex) {
     } else {
       matrix.print(routeId[0]);
     }
-    matrix.setCursor(xOrigin + 13, 5 + yOrigin);
+    matrix.setCursor(xOrigin + 12, 5 + yOrigin);
     matrix.setTextColor(white);
     matrix.print(headsign);
 
@@ -153,11 +152,8 @@ void drawArrivals(int firstIndex, int secondIndex) {
 void downButtonListener () {
   if (on) {
     on = false;
-    matrix.setCursor(0, 0);
-    matrix.setTextColor(white);
-    matrix.print("Sleep");
-    matrix.show();
-    delay(5000);
+    printMessage("Sleep mode...");
+    delay(3000);
     matrix.fillScreen(black);
     matrix.show();
   } else {

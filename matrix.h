@@ -12,11 +12,11 @@ Adafruit_Protomatter matrix( 128, 4, 1, rgbPins, 4, addrPins, clockPin, latchPin
 ProtomatterStatus LEDStatus = matrix.begin();
 
 uint16_t red123 = matrix.color565(238, 10, 10);
-uint16_t green456 = matrix.color565(0, 147, 60);
+uint16_t green456 = matrix.color565(0, 147, 40);
 uint16_t magenta7 = matrix.color565(185, 51, 173);
 uint16_t blueACE = matrix.color565(40, 80, 173);
 uint16_t orangeBDFM = matrix.color565(255, 75, 0);
-uint16_t greenG = matrix.color565(108, 190, 169);
+uint16_t greenG = matrix.color565(110, 255, 50);
 uint16_t brownJZ = matrix.color565(153, 102, 51);
 uint16_t grayL = matrix.color565(167, 169, 172);
 uint16_t yellowNQRW = matrix.color565(252, 204, 10);
@@ -65,6 +65,14 @@ uint16_t getLineColor(String routeId) {
     return matrix.color565(255, 255, 255);
 }
 
+void printMessage(String message) {
+  matrix.fillScreen(black);
+  matrix.show();
+  matrix.setCursor(7, matrix.height() / 2 - 4);
+  matrix.print(message);
+  matrix.show();
+}
+
 void setupMatrix() {
   Serial.print("Protomatter begin() status: ");
   Serial.println((int)LEDStatus);
@@ -72,6 +80,5 @@ void setupMatrix() {
     for(;;);
   }
 
-  matrix.print("Start...");
-  matrix.show();
+  printMessage("Starting up");
 }
