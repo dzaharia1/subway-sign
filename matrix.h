@@ -80,5 +80,6 @@ void setupMatrix() {
     for(;;);
   }
 
+  matrix.setRotation(2);
   printMessage("Starting up");
 }
