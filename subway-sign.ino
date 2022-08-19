@@ -30,14 +30,14 @@ void setup(void) {
 }
 
 void loop() {
-  if (on) {
+  if (!on) {
+    matrix.fillScreen(black);
+    delay(15000);
+  } else {
     Serial.println("Getting schedule...");
     updateData();
     parseSettings(doc.as<JsonArray>()[0]);
     populate();
-  } else {
-    matrix.fillScreen(black);
-    delay(15000);
   }
 }
 
