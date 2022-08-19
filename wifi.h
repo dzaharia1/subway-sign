@@ -8,8 +8,8 @@ char ssid[] = SSID;
 char wifiPass[] = WIFI_PASS;
 
 int wifiStatus = WL_IDLE_STATUS;
-char serverAddress[] = "subway-arrivals.herokuapp.com";
-int port = 80;
+char serverAddress[] = SERVER_ADDRESS;
+int port = SERVER_PORT;
 
 WiFiClient wifiClient;
 HttpClient client = HttpClient(wifiClient, serverAddress, port);
