@@ -30,13 +30,15 @@ void setup(void) {
 }
 
 void loop() {
+  Serial.println("Getting schedule...");
+  updateData();
+  parseSettings(doc.as<JsonArray>()[0]);
+
   if (!on) {
     matrix.fillScreen(black);
-    delay(15000);
+    matrix.show();
+    delay(5000);
   } else {
-    Serial.println("Getting schedule...");
-    updateData();
-    parseSettings(doc.as<JsonArray>()[0]);
     populate();
   }
 }
@@ -62,13 +64,16 @@ void updateData() {
   client.get(url);
   int statusCode = client.responseStatusCode();
   apiResponse = client.responseBody();
+  Serial.print("Response: ");
   Serial.println(apiResponse);
 
   doc.clear();
   DeserializationError error = deserializeJson(doc, apiResponse);
 
-  if (statusCode != 200) {
+  if (statusCode < 200 || statusCode >= 300) {
     printMessage("Server unreachable");
+    Serial.print("Status code: ");
+    Serial.println(statusCode);
     delay(1500);
     printMessage("Trying again");
     updateData();
@@ -83,7 +88,7 @@ void updateData() {
 
 void parseSettings (JsonObject settingsObject) {
   rotating = settingsObject["rotating"];
-  on = settingsObject["signOn"];
+  on = (boolean)settingsObject["signOn"];
   warnTime = settingsObject["warnTime"];
   rotationTime = settingsObject["rotationTime"];
   numArrivalsToShow = settingsObject["numArrivals"];
