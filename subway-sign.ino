@@ -25,7 +25,6 @@ void setup(void) {
   pinMode(downButton, INPUT_PULLUP);
   setupMatrix();
   setupWiFi();
-  attachInterrupt(digitalPinToInterrupt(upButton), upButtonListener, FALLING);
   attachInterrupt(digitalPinToInterrupt(downButton), downButtonListener, FALLING);
 }
 
@@ -45,16 +44,16 @@ void loop() {
 
 void populate() {
     if (rotating && on) {
-      for (int i = 1; i < numArrivalsToShow; i ++) {
+      for (int i = 1; i < numArrivalsToShow && rotating && on; i ++) {
         // check again in case mode was changed during execution
-        if (rotating && on) {
-          drawArrivals(0, i);
-          delay(rotationTime * 1000);
-        }
+        drawArrivals(0, i);
+        delay(rotationTime * 900);
+        updateData();
+        parseSettings(doc.as<JsonArray>()[0]);
       }
     } else {
       drawArrivals(0, 1);
-      delay(10000);
+      delay(6000);
     }
 }
 
@@ -182,19 +181,34 @@ void drawArrivals(int firstIndex, int secondIndex) {
 }
 
 void downButtonListener () {
+  int requestError = 1;
+  String url = "/signpower/";
+  url += SIGN_ID;
   if (on) {
-    on = false;
-    printMessage("Sleep mode...");
-    delay(3000);
-    matrix.fillScreen(black);
-    matrix.show();
+    url += "?power=false";
   } else {
-    on = true;
-    populate();
+    url += "?power=true";
   }
-}
+  requestError = client.put(url);
 
-void upButtonListener () {
-  rotating = !rotating;
-  populate();
+  if (requestError == 0) {
+    requestError = client.responseStatusCode();
+    if (requestError >= 200 || requestError < 300) {
+      if (on) {
+        on = false;
+        printMessage("Sleep mode...");
+        delay(1500);
+        matrix.fillScreen(black);
+        matrix.show();
+      } else {
+        on = true;
+        populate();
+      }
+    } else {
+      printMessage("Failed to save config");
+    }
+  } else {
+    printMessage("Failed to save config");
+  }
+  client.stop();
 }
