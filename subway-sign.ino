@@ -7,7 +7,7 @@
 #include "matrix.h"
 #include "wifi.h"
 
-// the document will contain the schedule. is updated by the getSchedule function
+// the document will contain the schedule. is updated by the updateData function
 #define upButton 2
 #define downButton 3
 StaticJsonDocument<2048> doc;
@@ -15,6 +15,9 @@ String apiResponse;
 
 boolean rotating = true;
 boolean on = true;
+int warnTime = 7;
+int rotationTime = 5;
+int numArrivalsToShow = 6;
 
 void setup(void) {
   Serial.begin(9600);
@@ -22,65 +25,88 @@ void setup(void) {
   pinMode(downButton, INPUT_PULLUP);
   setupMatrix();
   setupWiFi();
-  attachInterrupt(digitalPinToInterrupt(upButton), upButtonListener, FALLING);
   attachInterrupt(digitalPinToInterrupt(downButton), downButtonListener, FALLING);
 }
 
 void loop() {
   Serial.println("Getting schedule...");
-  getSchedule();
+  updateData();
+  parseSettings(doc.as<JsonArray>()[0]);
 
-  if (on) {
-    populate();
-  } else {
+  if (!on) {
+    matrix.fillScreen(black);
+    matrix.show();
     delay(5000);
+  } else {
+    populate();
   }
 }
 
 void populate() {
     if (rotating && on) {
-      for (int i = 1; i < 6; i ++) {
+      for (int i = 1; i < numArrivalsToShow && rotating && on; i ++) {
         // check again in case mode was changed during execution
-        if (rotating && on) {
-          drawArrivals(0, i);
-          delay(5000);
-        }
+        drawArrivals(0, i);
+        delay(rotationTime * 900);
+        updateData();
+        parseSettings(doc.as<JsonArray>()[0]);
       }
     } else {
       drawArrivals(0, 1);
-      delay(10000);
+      delay(6000);
     }
 }
 
-void getSchedule() {
+void updateData() {
+  int requestError = 1;
   String url = "/sign/";
   url += SIGN_ID;
-  client.get(url);
-  int statusCode = client.responseStatusCode();
-  apiResponse = client.responseBody();
-  Serial.println(apiResponse);
+  requestError = client.get(url);
 
-  doc.clear();
-  DeserializationError error = deserializeJson(doc, apiResponse);
+  if (requestError == 0) {
+    Serial.println("request started ok");
 
-  if (statusCode != 200) {
-    matrix.println("Server");
-    matrix.print("unreachable");
-    matrix.show();
-    delay(5000);
-    getSchedule();
-  } else if (error) {
-    matrix.print("deserializeJson() failed: ");
-    matrix.println(error.c_str());
-    matrix.show();
-    delay(5000);
-    getSchedule();
+    requestError = client.responseStatusCode();
+
+    if (requestError >= 200 || requestError < 300) {
+      String responseBody = client.responseBody();
+      Serial.println(responseBody);
+      doc.clear();
+      DeserializationError jsonError = deserializeJson(doc, responseBody);
+
+      if (jsonError) {
+        printMessage("Unreadable data");
+        Serial.println(jsonError.c_str());
+        delay(5000);
+        updateData();
+      }
+    } else {
+      printMessage("Server unreachable...");
+      Serial.print("Status code: ");
+      Serial.println(requestError);
+      delay(1500);
+      printMessage("Trying again...");
+      updateData();
+    }
+  } else {
+    Serial.print("Failed to connect:");
+    Serial.println(requestError);
   }
+
+  client.stop();
+}
+
+void parseSettings (JsonObject settingsObject) {
+  rotating = settingsObject["rotating"];
+  on = (boolean)settingsObject["signOn"];
+  warnTime = settingsObject["warnTime"];
+  rotationTime = settingsObject["rotationTime"];
+  numArrivalsToShow = settingsObject["numArrivals"];
 }
 
 // draw arrivals on the matrix
 void drawArrivals(int firstIndex, int secondIndex) {
-  JsonObject arrivalsToDraw[] = { doc.as<JsonArray>()[firstIndex], doc.as<JsonArray>()[secondIndex] };
+  JsonObject arrivalsToDraw[] = { doc.as<JsonArray>()[firstIndex + 1], doc.as<JsonArray>()[secondIndex + 1] };
   matrix.fillScreen(matrix.color565(0, 0, 0));
   matrix.setCursor(0, 0);
 
@@ -132,7 +158,7 @@ void drawArrivals(int firstIndex, int secondIndex) {
     } else {
       matrix.print(routeId[0]);
     }
-    matrix.setCursor(xOrigin + 13, 5 + yOrigin);
+    matrix.setCursor(xOrigin + 12, 5 + yOrigin);
     matrix.setTextColor(white);
     matrix.print(headsign);
 
@@ -142,7 +168,11 @@ void drawArrivals(int firstIndex, int secondIndex) {
       matrix.setCursor(matrix.width() - 29, 5 + yOrigin);
     }
 
-    matrix.setTextColor(white, black);
+    if (minutesUntil <= warnTime) {
+      matrix.setTextColor(getLineColor("B"), black);
+    } else {
+      matrix.setTextColor(white, black);
+    }
     matrix.print(minutesUntil);
     matrix.print("min");
   }
@@ -151,22 +181,34 @@ void drawArrivals(int firstIndex, int secondIndex) {
 }
 
 void downButtonListener () {
+  int requestError = 1;
+  String url = "/signpower/";
+  url += SIGN_ID;
   if (on) {
-    on = false;
-    matrix.setCursor(0, 0);
-    matrix.setTextColor(white);
-    matrix.print("Sleep");
-    matrix.show();
-    delay(5000);
-    matrix.fillScreen(black);
-    matrix.show();
+    url += "?power=false";
   } else {
-    on = true;
-    populate();
+    url += "?power=true";
   }
-}
+  requestError = client.put(url);
 
-void upButtonListener () {
-  rotating = !rotating;
-  populate();
+  if (requestError == 0) {
+    requestError = client.responseStatusCode();
+    if (requestError >= 200 || requestError < 300) {
+      if (on) {
+        on = false;
+        printMessage("Sleep mode...");
+        delay(1500);
+        matrix.fillScreen(black);
+        matrix.show();
+      } else {
+        on = true;
+        populate();
+      }
+    } else {
+      printMessage("Failed to save config");
+    }
+  } else {
+    printMessage("Failed to save config");
+  }
+  client.stop();
 }
