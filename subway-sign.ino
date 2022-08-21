@@ -59,31 +59,42 @@ void populate() {
 }
 
 void updateData() {
+  int requestError = 1;
   String url = "/sign/";
   url += SIGN_ID;
-  client.get(url);
-  int statusCode = client.responseStatusCode();
-  apiResponse = client.responseBody();
-  Serial.print("Response: ");
-  Serial.println(apiResponse);
+  requestError = client.get(url);
 
-  doc.clear();
-  DeserializationError error = deserializeJson(doc, apiResponse);
+  if (requestError == 0) {
+    Serial.println("request started ok");
 
-  if (statusCode < 200 || statusCode >= 300) {
-    printMessage("Server unreachable");
-    Serial.print("Status code: ");
-    Serial.println(statusCode);
-    delay(1500);
-    printMessage("Trying again");
-    updateData();
-  } else if (error) {
-    printMessage("Parsing failed");
-    delay(1000);
-    printMessage(error.c_str());
-    delay(5000);
-    updateData();
+    requestError = client.responseStatusCode();
+
+    if (requestError >= 200 || requestError < 300) {
+      String responseBody = client.responseBody();
+      Serial.println(responseBody);
+      doc.clear();
+      DeserializationError jsonError = deserializeJson(doc, responseBody);
+
+      if (jsonError) {
+        printMessage("Unreadable data");
+        Serial.println(jsonError.c_str());
+        delay(5000);
+        updateData();
+      }
+    } else {
+      printMessage("Server unreachable...");
+      Serial.print("Status code: ");
+      Serial.println(requestError);
+      delay(1500);
+      printMessage("Trying again...");
+      updateData();
+    }
+  } else {
+    Serial.print("Failed to connect:");
+    Serial.println(requestError);
   }
+
+  client.stop();
 }
 
 void parseSettings (JsonObject settingsObject) {
