@@ -6,6 +6,7 @@
 #include "configuration.h"
 #include "matrix.h"
 #include "wifi.h"
+#include "freememory.h"
 
 // the document will contain the schedule. is updated by the updateData function
 #define upButton 2
@@ -29,6 +30,8 @@ void setup(void) {
 }
 
 void loop() {
+  Serial.print("Free memory: ");
+  Serial.println(freeMemory());
   if (!on) {
     matrix.fillScreen(black);
     matrix.show();
@@ -135,19 +138,19 @@ void drawArrivals(int firstIndex, int secondIndex) {
     // draw the route icon for each arrival
     if (routeId[1] == 'X') {
       matrix.fillTriangle(
-        xOrigin + 5, yOrigin + 2,
-        xOrigin - 1, yOrigin + 8,
-        xOrigin + 11, yOrigin + 8,
+        xOrigin + 6, yOrigin + 2,
+        xOrigin, yOrigin + 8,
+        xOrigin + 12, yOrigin + 8,
         getLineColor(routeId.substring(0, 1)));
       matrix.fillTriangle(
-        xOrigin - 1, yOrigin + 8,
-        xOrigin + 11, yOrigin + 8,
-        xOrigin + 5, yOrigin + 14,
+        xOrigin, yOrigin + 8,
+        xOrigin + 12, yOrigin + 8,
+        xOrigin + 6, yOrigin + 14,
         getLineColor(routeId.substring(0, 1)));
     } else {
-      matrix.fillCircle(xOrigin + 5, 8 + yOrigin, 5, getLineColor(routeId));
+      matrix.fillCircle(xOrigin + 6, 8 + yOrigin, 5, getLineColor(routeId));
     }
-    matrix.setCursor(xOrigin + 3, 5 + yOrigin);
+    matrix.setCursor(xOrigin + 4, 5 + yOrigin);
     matrix.setTextColor(black);
     if (routeId == "GS") {
       matrix.print(routeId[1]);
@@ -156,7 +159,7 @@ void drawArrivals(int firstIndex, int secondIndex) {
     }
 
     // print headsign
-    matrix.setCursor(xOrigin + 13, 5 + yOrigin);
+    matrix.setCursor(xOrigin + 14, 5 + yOrigin);
     matrix.setTextColor(white);
     matrix.print(headsign);
 
