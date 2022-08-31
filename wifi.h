@@ -12,7 +12,6 @@ char serverAddress[] = SERVER_ADDRESS;
 int port = SERVER_PORT;
 
 WiFiClient wifiClient;
-HttpClient client = HttpClient(wifiClient, serverAddress, port);
 
 void setupWiFi() {
   // set up wifi

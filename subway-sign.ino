@@ -62,39 +62,29 @@ void populate() {
 }
 
 void updateData() {
-  int requestError = 1;
   String url = "/sign/";
   url += SIGN_ID;
-  requestError = client.get(url);
+  HttpClient client = HttpClient(wifiClient, serverAddress, port);
+  int requestError = client.get(url);
+
+  int statusCode = client.responseStatusCode();
+  String response = client.responseBody();
+  Serial.println(response);
 
   if (requestError == 0) {
-    Serial.println("request started ok");
+    DeserializationError jsonError = deserializeJson(doc, response);
 
-    requestError = client.responseStatusCode();
-
-    if (requestError >= 200 || requestError < 300) {
-      String responseBody = client.responseBody();
-      Serial.println(responseBody);
+    if (jsonError) {
       doc.clear();
-      DeserializationError jsonError = deserializeJson(doc, responseBody);
-
-      if (jsonError) {
-        printMessage("Unreadable data");
-        Serial.println(jsonError.c_str());
-        delay(5000);
-        updateData();
-      }
-    } else {
-      printMessage("Server unreachable...");
-      Serial.print("Status code: ");
-      Serial.println(requestError);
-      delay(1500);
-      printMessage("Trying again...");
+      printMessage("Unreadable data");
+      Serial.println(jsonError.c_str());
+      delay(500);
       updateData();
     }
   } else {
-    Serial.print("Failed to connect:");
+    Serial.print("Error requesting new data: ");
     Serial.println(requestError);
+    updateData();
   }
 
   client.stop();
@@ -127,6 +117,7 @@ void drawArrivals(int firstIndex, int secondIndex) {
     matrix.setTextSize(0);
     matrix.setTextWrap(false);
 
+    // set up layout based on whether the sign is rotating. And if so, print the indices
     if (rotating) {
       xOrigin = 6;
       headsign = headsign.substring(0, 13);
@@ -141,6 +132,7 @@ void drawArrivals(int firstIndex, int secondIndex) {
       xOrigin = 0;
     }
     
+    // draw the route icon for each arrival
     if (routeId[1] == 'X') {
       matrix.fillTriangle(
         xOrigin + 5, yOrigin + 2,
@@ -162,16 +154,18 @@ void drawArrivals(int firstIndex, int secondIndex) {
     } else {
       matrix.print(routeId[0]);
     }
-    matrix.setCursor(xOrigin + 12, 5 + yOrigin);
+
+    // print headsign
+    matrix.setCursor(xOrigin + 13, 5 + yOrigin);
     matrix.setTextColor(white);
     matrix.print(headsign);
 
+    // print the arrival estimate
     if (minutesUntil < 10) {
       matrix.setCursor(matrix.width() - 23, 5 + yOrigin);
     } else {
       matrix.setCursor(matrix.width() - 29, 5 + yOrigin);
     }
-
     if (minutesUntil <= warnTime) {
       matrix.setTextColor(getLineColor("B"), black);
     } else {
@@ -188,6 +182,8 @@ void downButtonListener () {
   int requestError = 1;
   String url = "/signpower/";
   url += SIGN_ID;
+  HttpClient client = HttpClient(wifiClient, serverAddress, port);
+
   if (on) {
     url += "?power=false";
   } else {
