@@ -6,7 +6,6 @@
 #include "configuration.h"
 #include "matrix.h"
 #include "wifi.h"
-#include "freememory.h"
 
 // the document will contain the schedule. is updated by the updateData function
 #define upButton 2
@@ -31,7 +30,6 @@ void setup(void) {
 
 void loop() {
   Serial.print("Free memory: ");
-  Serial.println(freeMemory());
   Serial.println("Getting schedule...");
   updateData();
   parseSettings(doc.as<JsonArray>()[0]);
