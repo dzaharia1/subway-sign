@@ -32,35 +32,33 @@ void setup(void) {
 void loop() {
   Serial.print("Free memory: ");
   Serial.println(freeMemory());
-  if (!on) {
-    matrix.fillScreen(black);
-    matrix.show();
-    delay(5000);
-    Serial.println("Getting schedule...");
-    updateData();
-    parseSettings(doc.as<JsonArray>()[0]);
-  } else {
-    populate();
-  }
+  Serial.println("Getting schedule...");
+  updateData();
+  parseSettings(doc.as<JsonArray>()[0]);
+  populate();
 }
 
 void populate() {
     if (rotating && on) {
       for (int i = 1; i < numArrivalsToShow && rotating && on; i ++) {
         // check again in case mode was changed during execution
-        delay(rotationTime * 900);
         Serial.println("Getting schedule...");
         updateData();
         parseSettings(doc.as<JsonArray>()[0]);
         drawArrivals(0, i);
+        delay(rotationTime * 900);
       }
-    } else {
+    } else if (!rotating && on) {
       // check again in case mode was changed during execution
       Serial.println("Getting schedule...");
       updateData();
       parseSettings(doc.as<JsonArray>()[0]);
       drawArrivals(0, 1);
       delay(6000);
+    } else if (!on) {
+      matrix.fillScreen(black);
+      matrix.show();
+      delay(5000);
     }
 }
 
