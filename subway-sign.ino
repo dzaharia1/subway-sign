@@ -29,7 +29,7 @@ void setup(void) {
 }
 
 void loop() {
-  Serial.print("Free memory: ");
+  setupWiFi();
   Serial.println("Getting schedule...");
   updateData();
   parseSettings(doc.as<JsonArray>()[0]);
@@ -77,12 +77,15 @@ void updateData() {
       doc.clear();
       printMessage("Unreadable data");
       Serial.println(jsonError.c_str());
+      setupWiFi();
       delay(500);
       updateData();
     }
   } else {
     Serial.print("Error requesting new data: ");
     Serial.println(requestError);
+    setupWiFi();
+    delay(500);
     updateData();
   }
 

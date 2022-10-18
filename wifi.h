@@ -20,6 +20,8 @@ void setupWiFi() {
   }
 
   while (wifiStatus != WL_CONNECTED) {
+    Serial.print("Wifi status: ");
+    Serial.println(WiFi.status());
     wifiStatus = WiFi.begin(ssid, wifiPass);
     delay(1000);
   }
