@@ -11,7 +11,6 @@
 #define upButton 2
 #define downButton 3
 StaticJsonDocument<2048> doc;
-String apiResponse;
 
 boolean rotating = true;
 boolean on = true;
