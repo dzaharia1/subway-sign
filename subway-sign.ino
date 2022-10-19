@@ -189,7 +189,7 @@ void downButtonListener () {
   } else {
     url += "?power=true";
   }
-  requestError = client.put(url);
+  requestError = client.post(url);
 
   if (requestError == 0) {
     requestError = client.responseStatusCode();
@@ -202,6 +202,7 @@ void downButtonListener () {
         matrix.show();
       } else {
         on = true;
+        printMessage("Turning on...");
         populate();
       }
     } else {
