@@ -25,41 +25,44 @@ void setup(void) {
   setupMatrix();
   setupWiFi();
   attachInterrupt(digitalPinToInterrupt(downButton), downButtonListener, FALLING);
-}
-
-void loop() {
-  setupWiFi();
   Serial.println("Getting schedule...");
   updateData();
   parseSettings(doc.as<JsonArray>()[0]);
+}
+
+void loop() {
   populate();
 }
 
 void populate() {
-    if (rotating && on) {
-      for (int i = 1; i < numArrivalsToShow && rotating && on; i ++) {
-        // check again in case mode was changed during execution
-        Serial.println("Getting schedule...");
-        updateData();
-        parseSettings(doc.as<JsonArray>()[0]);
-        drawArrivals(0, i);
-        delay(rotationTime * 900);
-      }
-    } else if (!rotating && on) {
+  StaticJsonDocument<2048> newDoc;
+  doc = newDoc;
+  Serial.println("Getting schedule...");
+  updateData();
+  parseSettings(doc.as<JsonArray>()[0]);
+
+  if (rotating && on) {
+    for (int i = 1; i < numArrivalsToShow && rotating && on; i ++) {
       // check again in case mode was changed during execution
+      drawArrivals(0, i);
       Serial.println("Getting schedule...");
       updateData();
       parseSettings(doc.as<JsonArray>()[0]);
-      drawArrivals(0, 1);
-      delay(6000);
-    } else if (!on) {
-      matrix.fillScreen(black);
-      matrix.show();
-      delay(5000);
+      delay(rotationTime * 900);
     }
+  } else if (!rotating && on) {
+    // check again in case mode was changed during execution
+    drawArrivals(0, 1);
+    delay(6000);
+  } else if (!on) {
+    matrix.fillScreen(black);
+    matrix.show();
+    delay(6000);
+  }
 }
 
 void updateData() {
+  setupWiFi();
   String url = "/sign/";
   url += SIGN_ID;
   HttpClient client = HttpClient(wifiClient, serverAddress, port);
@@ -76,14 +79,13 @@ void updateData() {
       doc.clear();
       printMessage("Unreadable data");
       Serial.println(jsonError.c_str());
-      setupWiFi();
       delay(500);
       updateData();
     }
   } else {
     Serial.print("Error requesting new data: ");
     Serial.println(requestError);
-    setupWiFi();
+    printMessage("Request error");
     delay(500);
     updateData();
   }
