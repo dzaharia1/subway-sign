@@ -29,34 +29,37 @@ void setup(void) {
 
 void loop() {
   setupWiFi();
-  Serial.println("Getting schedule...");
-  updateData();
-  parseSettings(doc.as<JsonArray>()[0]);
   populate();
 }
 
 void populate() {
-    if (rotating && on) {
-      for (int i = 1; i < numArrivalsToShow && rotating && on; i ++) {
-        // check again in case mode was changed during execution
-        Serial.println("Getting schedule...");
-        updateData();
-        parseSettings(doc.as<JsonArray>()[0]);
-        drawArrivals(0, i);
-        delay(rotationTime * 900);
-      }
-    } else if (!rotating && on) {
+  StaticJsonDocument<2048> newDoc;
+  doc = newDoc;
+
+  if (rotating && on) {
+    for (int i = 1; i < numArrivalsToShow && rotating && on; i ++) {
       // check again in case mode was changed during execution
       Serial.println("Getting schedule...");
       updateData();
       parseSettings(doc.as<JsonArray>()[0]);
-      drawArrivals(0, 1);
-      delay(6000);
-    } else if (!on) {
-      matrix.fillScreen(black);
-      matrix.show();
-      delay(5000);
+      drawArrivals(0, i);
+      delay(rotationTime * 900);
     }
+  } else if (!rotating && on) {
+    // check again in case mode was changed during execution
+    Serial.println("Getting schedule...");
+    updateData();
+    parseSettings(doc.as<JsonArray>()[0]);
+    drawArrivals(0, 1);
+    delay(6000);
+  } else if (!on) {
+    matrix.fillScreen(black);
+    matrix.show();
+    Serial.println("Getting schedule...");
+    updateData();
+    parseSettings(doc.as<JsonArray>()[0]);
+    delay(5000);
+  }
 }
 
 void updateData() {
@@ -83,6 +86,7 @@ void updateData() {
   } else {
     Serial.print("Error requesting new data: ");
     Serial.println(requestError);
+    printMessage("Request error");
     setupWiFi();
     delay(500);
     updateData();
