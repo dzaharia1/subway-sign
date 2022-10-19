@@ -25,9 +25,6 @@ void setup(void) {
   setupMatrix();
   setupWiFi();
   attachInterrupt(digitalPinToInterrupt(downButton), downButtonListener, FALLING);
-  Serial.println("Getting schedule...");
-  updateData();
-  parseSettings(doc.as<JsonArray>()[0]);
 }
 
 void loop() {
