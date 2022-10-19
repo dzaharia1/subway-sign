@@ -18,6 +18,9 @@ void setupWiFi() {
   if (WiFi.status() == WL_NO_MODULE) {
    while (true);
   }
+  
+  Serial.print("Wifi status: ");
+  Serial.println(WiFi.status());
 
   while (wifiStatus != WL_CONNECTED) {
     Serial.print("Wifi status: ");
