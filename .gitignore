@@ -1,4 +1,4 @@
 .vscode
 compiled
 configuration.h
-output.txt
+output*.txt
