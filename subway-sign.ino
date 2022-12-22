@@ -12,13 +12,14 @@
 #define downButton 3
 
 void setup(void) {
-  Serial.begin(9600);
-  pinMode(upButton, INPUT_PULLUP);
-  pinMode(downButton, INPUT_PULLUP);
+  pinMode(LED_BUILTIN, OUTPUT);
+  // Serial.begin(9600);
+  // pinMode(upButton, INPUT_PULLUP);
+  // pinMode(downButton, INPUT_PULLUP);
   setupMatrix();
-  setupWiFi();
+  // setupWiFi();
+  printMessage("Test/nTest");
 }
 
 void loop() {
-  
 }

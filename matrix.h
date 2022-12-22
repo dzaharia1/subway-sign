@@ -79,7 +79,7 @@ void setupMatrix() {
   if(LEDStatus != PROTOMATTER_OK) {
     for(;;);
   }
-
   matrix.setRotation(2);
+
   printMessage("Starting up");
 }
